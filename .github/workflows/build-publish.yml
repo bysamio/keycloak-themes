@@ -1,0 +1,124 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+    paths:
+      - "themes/**"
+      - "Dockerfile"
+      - ".dockerignore"
+      - "VERSION"
+      - ".github/workflows/build-publish.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "themes/**"
+      - "Dockerfile"
+      - ".dockerignore"
+      - "VERSION"
+      - ".github/workflows/build-publish.yml"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag override (e.g. 0.2.0)"
+        required: false
+        type: string
+
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: bysamio/keycloak-themes
+
+jobs:
+  build-and-push:
+    name: Build & Publish
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Extract version
+        id: version
+        run: |
+          FILE_VERSION=$(cat VERSION | tr -d '[:space:]')
+          SHORT_SHA=$(git rev-parse --short=7 HEAD)
+
+          if [[ -n "${{ inputs.version }}" ]]; then
+            VERSION="${{ inputs.version }}"
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            # Dev build on main: file version + short SHA
+            VERSION="${FILE_VERSION}-${SHORT_SHA}"
+          fi
+
+          IS_RELEASE=$([[ "${{ github.ref_type }}" == "tag" ]] && echo "true" || echo "false")
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "file_version=$FILE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "is_release=$IS_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION (file: $FILE_VERSION, release: $IS_RELEASE)"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}},value=v${{ steps.version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=v${{ steps.version.outputs.version }}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          platforms: linux/amd64,linux/arm64
+
+  # Validate the image on PRs (build only, no push)
+  validate:
+    name: Validate Build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          platforms: linux/amd64

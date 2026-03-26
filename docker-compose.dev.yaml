@@ -1,0 +1,51 @@
+# ---------------------------------------------------------------------------
+# Keycloak Themes – Local Development
+# ---------------------------------------------------------------------------
+# Prerequisites:
+#   1. The shared dev-postgres container must be running on the "devnet" network.
+#   2. Create the database and user once:
+#        psql -h localhost -U postgres -c "CREATE USER kc_themes WITH PASSWORD 'themes';"
+#        psql -h localhost -U postgres -c "CREATE DATABASE kc_themes OWNER kc_themes;"
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yaml up
+#
+# Admin console: http://localhost:8080  (admin / admin)
+# ---------------------------------------------------------------------------
+
+services:
+  keycloak:
+    image: ghcr.io/bysamio/keycloak:26.5.2
+    container_name: dev-keycloak-themes
+    command: start-dev
+    ports:
+      - "8080:8080"
+    environment:
+      # ── Admin bootstrap ──
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+
+      # ── Database ──
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://dev-postgres:5432/kc_themes
+      KC_DB_USERNAME: kc_themes
+      KC_DB_PASSWORD: themes
+
+      # ── Dev convenience ──
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+    volumes:
+      - ./themes:/opt/keycloak/themes
+    networks:
+      - devnet
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+networks:
+  devnet:
+    external: true

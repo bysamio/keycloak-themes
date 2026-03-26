@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 0.2.0)"
+        required: true
+        type: string
+      next_bump:
+        description: "Version bump to apply on main after the release tag"
+        required: true
+        type: choice
+        default: minor
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  packages: write
+  actions: write
+
+jobs:
+  release:
+    name: Bump, Tag & Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Pull latest changes
+        run: git pull --rebase origin main
+
+      - name: Validate release version and calculate next snapshot
+        id: versions
+        shell: bash
+        run: |
+          VERSION="${{ inputs.version }}"
+          NEXT_BUMP="${{ inputs.next_bump }}"
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release version must be a plain SemVer version like 0.2.0" >&2
+            exit 1
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+          case "$NEXT_BUMP" in
+            patch)
+              NEXT_SNAPSHOT="${MAJOR}.${MINOR}.$((PATCH + 1))-SNAPSHOT"
+              ;;
+            minor)
+              NEXT_SNAPSHOT="${MAJOR}.$((MINOR + 1)).0-SNAPSHOT"
+              ;;
+            major)
+              NEXT_SNAPSHOT="$((MAJOR + 1)).0.0-SNAPSHOT"
+              ;;
+            *)
+              echo "Unsupported next_bump: $NEXT_BUMP" >&2
+              exit 1
+              ;;
+          esac
+
+          echo "release_version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "next_snapshot=$NEXT_SNAPSHOT" >> "$GITHUB_OUTPUT"
+          echo "Release version: $VERSION"
+          echo "Next snapshot: $NEXT_SNAPSHOT"
+
+      - name: Set VERSION to release
+        run: echo "${{ steps.versions.outputs.release_version }}" > VERSION
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "chore: release v${{ steps.versions.outputs.release_version }}"
+          git push
+
+      - name: Create tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag "v${{ steps.versions.outputs.release_version }}"
+          git push origin "v${{ steps.versions.outputs.release_version }}"
+          gh release create "v${{ steps.versions.outputs.release_version }}" \
+            --title "v${{ steps.versions.outputs.release_version }}" \
+            --generate-notes
+
+      - name: Trigger release CI/CD pipeline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run build-publish.yml \
+            --ref "v${{ steps.versions.outputs.release_version }}" \
+            -f version="${{ steps.versions.outputs.release_version }}"
+          echo "Triggered release CI/CD pipeline for v${{ steps.versions.outputs.release_version }}"
+
+      - name: Bump VERSION to next snapshot
+        run: echo "${{ steps.versions.outputs.next_snapshot }}" > VERSION
+
+      - name: Commit next snapshot bump
+        run: |
+          git add VERSION
+          git commit -m "chore: start ${{ steps.versions.outputs.next_snapshot }}"
+          git push
+
+      - name: Trigger main snapshot CI/CD pipeline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run build-publish.yml --ref main
+          echo "Triggered main CI/CD pipeline for ${{ steps.versions.outputs.next_snapshot }}"
