@@ -1,0 +1,332 @@
+/*
+ * CasePack Keycloak Login Theme
+ *
+ * Targets the Keycloak v2 (PatternFly 5) login page structure.
+ * Centered layout with CasePack logo replacing the default header.
+ *
+ * Dark mode: The SPA writes a `casepack-theme` cookie ("light"/"dark").
+ * theme-sync.js reads it and toggles .pf-v5-theme-dark on <html>.
+ * Colors are defined as CSS custom properties for easy theming and overrides.
+ */
+
+/* ─── Font: Inter ────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ─── CSS Custom Properties — Light (default) ────────────────── */
+:root {
+  --cp-bg: #fcfcfc;
+  --cp-fg: #1e2128;
+  --cp-card: #ffffff;
+  --cp-card-fg: #1e2128;
+  --cp-border: #e2e3e8;
+  --cp-input-bg: #ffffff;
+  --cp-input-border: #d1d5db;
+  --cp-primary: #1e2128;
+  --cp-primary-fg: #fcfcfc;
+  --cp-accent: #2563eb;
+  --cp-accent-hover: #1d4ed8;
+  --cp-destructive: #ef4444;
+  --cp-muted-fg: #6b7280;
+  --cp-ring: #2563eb;
+  --cp-radius: 8px;
+  --cp-radius-lg: 16px;
+  --cp-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --cp-shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+/* ─── Dark overrides ─────────────────────────────────────────── */
+.pf-v5-theme-dark {
+  --cp-bg: #0a0b0e;
+  --cp-fg: #f0f1f3;
+  --cp-card: #141519;
+  --cp-card-fg: #f0f1f3;
+  --cp-border: #2a2e38;
+  --cp-input-bg: #1a1d25;
+  --cp-input-border: #3a3f4b;
+  --cp-primary: #ffffff;
+  --cp-primary-fg: #13161c;
+  --cp-accent: #3b82f6;
+  --cp-accent-hover: #2563eb;
+  --cp-destructive: #f87171;
+  --cp-muted-fg: #8b92a0;
+  --cp-ring: #3b82f6;
+  --cp-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --cp-shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+/* ─── Global Reset ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+body#keycloak-bg {
+  background: var(--cp-bg) !important;
+  color: var(--cp-fg) !important;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* ─── Main Login Wrapper — Centered ──────────────────────────── */
+.pf-v5-c-login {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh !important;
+  padding: 2rem 1rem !important;
+  background: var(--cp-bg) !important;
+}
+
+.pf-v5-c-login__container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 420px !important;
+  gap: 0 !important;
+  /* Override default PF grid layout */
+  grid-template-columns: unset !important;
+  grid-template-rows: unset !important;
+}
+
+@media (min-width: 1200px) {
+  .pf-v5-c-login__container {
+    padding-inline-start: 0 !important;
+    padding-inline-end: 0 !important;
+  }
+}
+
+/* ─── Header — Logo + App Name ───────────────────────────────── */
+.pf-v5-c-login__header {
+  width: 100% !important;
+  text-align: center !important;
+  padding: 0 0 1.5rem !important;
+  background: transparent !important;
+}
+
+/* Hide the default "Sign in to CasePack" brand text */
+#kc-header-wrapper.pf-v5-c-brand {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+}
+
+/* Inject CasePack logo */
+#kc-header-wrapper::before {
+  content: '';
+  display: block;
+  width: 56px;
+  height: 56px;
+  background: url('../img/logo.svg') no-repeat center / contain;
+}
+
+/* Inject "CasePack" wordmark */
+#kc-header-wrapper::after {
+  content: 'CasePack';
+  display: block;
+  font-size: 1.5rem !important;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--cp-fg);
+  line-height: 1;
+}
+
+/* ─── Login Card ─────────────────────────────────────────────── */
+.pf-v5-c-login__main {
+  background: var(--cp-card) !important;
+  color: var(--cp-card-fg) !important;
+  border: 1px solid var(--cp-border) !important;
+  border-radius: var(--cp-radius-lg) !important;
+  box-shadow: var(--cp-shadow-lg) !important;
+  width: 100% !important;
+  max-width: 420px !important;
+  overflow: hidden !important;
+  /* Remove default PF grid area */
+  grid-area: unset !important;
+}
+
+/* ─── Page Title ─────────────────────────────────────────────── */
+.pf-v5-c-login__main-header {
+  padding: 2rem 2rem 0 !important;
+}
+
+#kc-page-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: var(--cp-fg) !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ─── Form Body ──────────────────────────────────────────────── */
+.pf-v5-c-login__main-body {
+  padding: 1.5rem 2rem 2rem !important;
+}
+
+/* ─── Labels ─────────────────────────────────────────────────── */
+.pf-v5-c-form__label-text {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: var(--cp-fg) !important;
+}
+
+/* ─── Inputs ─────────────────────────────────────────────────── */
+.pf-v5-c-form-control,
+.pf-v5-c-form-control > input {
+  font-size: 0.875rem !important;
+  background: var(--cp-input-bg) !important;
+  color: var(--cp-fg) !important;
+  border-color: var(--cp-input-border) !important;
+  border-radius: var(--cp-radius) !important;
+  outline: none !important;
+  --pf-v5-c-form-control--BorderBottomColor: var(--cp-input-border) !important;
+  --pf-v5-c-form-control--after--BorderBottomColor: var(--cp-input-border) !important;
+}
+
+/* Remove the PF bottom-border indicator line */
+.pf-v5-c-form-control::after {
+  border-bottom-color: transparent !important;
+}
+
+.pf-v5-c-form-control:focus-within {
+  --pf-v5-c-form-control--BorderColor: var(--cp-ring) !important;
+  border-color: var(--cp-ring) !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
+
+.pf-v5-c-form-control:focus-within::after {
+  border-bottom-color: transparent !important;
+}
+
+/* Password visibility toggle button */
+.pf-v5-c-input-group__item .pf-v5-c-button.pf-m-control {
+  background: var(--cp-input-bg) !important;
+  color: var(--cp-muted-fg) !important;
+  border-color: var(--cp-input-border) !important;
+  border-radius: 0 var(--cp-radius) var(--cp-radius) 0 !important;
+}
+
+.pf-v5-c-input-group .pf-v5-c-input-group__item.pf-m-fill .pf-v5-c-form-control {
+  border-radius: var(--cp-radius) 0 0 var(--cp-radius) !important;
+}
+
+/* ─── Primary Button (Sign In) ───────────────────────────────── */
+.pf-v5-c-button.pf-m-primary {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  height: 2.75rem !important;
+  background: var(--cp-accent) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: var(--cp-radius) !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--cp-accent) !important;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+  background: var(--cp-accent-hover) !important;
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--cp-accent-hover) !important;
+}
+
+.pf-v5-c-button.pf-m-primary:focus-visible {
+  outline: 2px solid var(--cp-ring) !important;
+  outline-offset: 2px !important;
+}
+
+/* ─── Links (Forgot password, Register) ──────────────────────── */
+a,
+.pf-v5-c-helper-text a {
+  color: var(--cp-accent) !important;
+  text-decoration: none !important;
+  font-size: 0.875rem !important;
+  transition: color 0.15s ease !important;
+}
+
+a:hover,
+.pf-v5-c-helper-text a:hover {
+  color: var(--cp-accent-hover) !important;
+  text-decoration: underline !important;
+}
+
+/* ─── Footer inside card ─────────────────────────────────────── */
+.pf-v5-c-login__main-footer {
+  padding: 0 2rem 1.5rem !important;
+  text-align: center !important;
+}
+
+.pf-v5-c-login__main-footer-band {
+  padding: 1rem 0 0 !important;
+  border-top: 1px solid var(--cp-border) !important;
+}
+
+/* ─── Error / Alert Messages ─────────────────────────────────── */
+.pf-v5-c-alert.pf-m-danger,
+.pf-v5-c-alert.pf-m-inline.pf-m-danger {
+  background: rgba(239, 68, 68, 0.06) !important;
+  color: var(--cp-destructive) !important;
+  border: 1px solid rgba(239, 68, 68, 0.15) !important;
+  border-radius: var(--cp-radius) !important;
+  padding: 0.75rem 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.pf-v5-c-alert.pf-m-danger .pf-v5-c-alert__title,
+.pf-v5-c-alert.pf-m-danger .pf-v5-c-alert__description {
+  color: var(--cp-destructive) !important;
+}
+
+/* ─── Checkbox (Remember Me) ─────────────────────────────────── */
+.pf-v5-c-check__input {
+  accent-color: var(--cp-accent) !important;
+}
+
+.pf-v5-c-check__label {
+  font-size: 0.875rem !important;
+  color: var(--cp-muted-fg) !important;
+}
+
+/* ─── Helper / Info Text ─────────────────────────────────────── */
+.pf-v5-c-helper-text__item-text {
+  font-size: 0.8125rem !important;
+  color: var(--cp-muted-fg) !important;
+}
+
+/* ─── Registration link ──────────────────────────────────────── */
+#kc-registration {
+  text-align: center !important;
+  padding-top: 1rem !important;
+}
+
+#kc-registration span {
+  font-size: 0.875rem !important;
+  color: var(--cp-muted-fg) !important;
+}
+
+/* ─── Misc PF v5 Overrides ───────────────────────────────────── */
+/* Remove default PF login footer/banner outside the card */
+.pf-v5-c-login__footer {
+  display: none !important;
+}
+
+/* Remove PF's default background image */
+.pf-v5-c-login::before,
+.pf-v5-c-login::after {
+  display: none !important;
+}
+
+/* Form spacing */
+.pf-v5-c-form__group + .pf-v5-c-form__group {
+  padding-top: 0.5rem !important;
+}
+
+/* Actions row */
+.pf-v5-c-form__actions {
+  padding-top: 0.75rem !important;
+}
