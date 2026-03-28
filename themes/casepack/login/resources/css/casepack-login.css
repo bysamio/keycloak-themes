@@ -111,9 +111,10 @@ body#keycloak-bg {
   line-height: 0 !important;
   color: transparent !important;
   display: flex !important;
-  flex-direction: column !important;
+  /* flex-direction: column !important; */
   align-items: center !important;
-  gap: 0.75rem !important;
+  gap: 0.15rem !important;
+  justify-content: center !important;
 }
 
 /* Inject CasePack logo */
