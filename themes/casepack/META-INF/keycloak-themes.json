@@ -2,7 +2,7 @@
   "themes": [
     {
       "name": "casepack",
-      "types": ["login"]
+      "types": ["login", "email"]
     }
   ]
 }
