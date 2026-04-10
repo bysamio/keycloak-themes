@@ -331,3 +331,78 @@ a:hover,
 .pf-v5-c-form__actions {
   padding-top: 0.75rem !important;
 }
+
+/* ─── Info & Error Page — Back/Continue Links ────────────────── */
+#kc-info-message .instruction,
+#kc-error-message .instruction {
+  font-size: 0.9375rem !important;
+  color: var(--cp-muted-fg) !important;
+  text-align: center !important;
+  margin: 0 0 1.5rem !important;
+  line-height: 1.5 !important;
+}
+
+.cp-back-link {
+  text-align: center !important;
+  margin: 0 !important;
+}
+
+.cp-error-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.625rem !important;
+}
+
+.cp-btn-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 2.75rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  background: var(--cp-accent) !important;
+  border-radius: var(--cp-radius) !important;
+  text-decoration: none !important;
+  transition: background 0.15s ease !important;
+}
+
+.cp-btn-primary:hover {
+  background: var(--cp-accent-hover) !important;
+  text-decoration: none !important;
+  color: #ffffff !important;
+}
+
+.cp-btn-primary:focus-visible {
+  outline: 2px solid var(--cp-ring) !important;
+  outline-offset: 2px !important;
+}
+
+.cp-btn-secondary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 2.75rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: var(--cp-fg) !important;
+  background: transparent !important;
+  border: 1px solid var(--cp-border) !important;
+  border-radius: var(--cp-radius) !important;
+  text-decoration: none !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+
+.cp-btn-secondary:hover {
+  background: var(--cp-input-bg) !important;
+  border-color: var(--cp-input-border) !important;
+  text-decoration: none !important;
+  color: var(--cp-fg) !important;
+}
+
+.cp-btn-secondary:focus-visible {
+  outline: 2px solid var(--cp-ring) !important;
+  outline-offset: 2px !important;
+}
