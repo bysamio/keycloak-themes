@@ -2,15 +2,12 @@
  * CasePack Keycloak Login Theme
  *
  * Targets the Keycloak v2 (PatternFly 5) login page structure.
- * Centered layout with CasePack logo replacing the default header.
+ * Responsive CasePack workspace layout built on the upstream login template.
  *
  * Dark mode: The SPA writes a `casepack-theme` cookie ("light"/"dark").
  * theme-sync.js reads it and toggles .pf-v5-theme-dark on <html>.
  * Colors are defined as CSS custom properties for easy theming and overrides.
  */
-
-/* ─── Font: Inter ────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* ─── CSS Custom Properties — Light (default) ────────────────── */
 :root {
@@ -29,7 +26,7 @@
   --cp-muted-fg: #6b7280;
   --cp-ring: #2563eb;
   --cp-radius: 8px;
-  --cp-radius-lg: 16px;
+  --cp-radius-lg: 12px;
   --cp-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --cp-shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
 }
@@ -55,10 +52,12 @@
 }
 
 /* ─── Global Reset ───────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+body#keycloak-bg,
+button,
+input,
+select,
+textarea {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
 body#keycloak-bg {
@@ -68,26 +67,24 @@ body#keycloak-bg {
   margin: 0;
 }
 
-/* ─── Main Login Wrapper — Centered ──────────────────────────── */
+/* ─── Main Login Wrapper ─────────────────────────────────────── */
 .pf-v5-c-login {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   min-height: 100vh !important;
-  padding: 2rem 1rem !important;
+  padding: clamp(1.5rem, 5vw, 4rem) !important;
   background: var(--cp-bg) !important;
 }
 
 .pf-v5-c-login__container {
-  display: flex !important;
-  flex-direction: column !important;
+  display: grid !important;
+  grid-template-columns: minmax(18rem, 1fr) minmax(22rem, 27rem) !important;
+  grid-template-rows: auto !important;
   align-items: center !important;
   width: 100% !important;
-  max-width: 420px !important;
-  gap: 0 !important;
-  /* Override default PF grid layout */
-  grid-template-columns: unset !important;
-  grid-template-rows: unset !important;
+  max-width: 1080px !important;
+  gap: clamp(3rem, 8vw, 7rem) !important;
 }
 
 @media (min-width: 1200px) {
@@ -97,55 +94,62 @@ body#keycloak-bg {
   }
 }
 
-/* ─── Header — Logo + App Name ───────────────────────────────── */
+/* ─── Header — Product identity ──────────────────────────────── */
 .pf-v5-c-login__header {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
   width: 100% !important;
-  text-align: center !important;
-  padding: 0 0 1.5rem !important;
+  max-width: 30rem !important;
+  text-align: left !important;
+  padding: 0 !important;
   background: transparent !important;
 }
 
-/* Hide the default "Sign in to CasePack" brand text */
 #kc-header-wrapper.pf-v5-c-brand {
-  font-size: 0 !important;
-  line-height: 0 !important;
-  color: transparent !important;
+  font-size: 2rem !important;
+  line-height: 1.1 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.035em !important;
+  color: var(--cp-fg) !important;
   display: flex !important;
-  /* flex-direction: column !important; */
   align-items: center !important;
-  gap: 0.15rem !important;
-  justify-content: center !important;
+  gap: 0.875rem !important;
+  justify-content: flex-start !important;
 }
 
-/* Inject CasePack logo */
 #kc-header-wrapper::before {
   content: '';
-  display: block;
-  width: 56px;
-  height: 56px;
-  background: url('../img/logo.svg') no-repeat center / contain;
+  display: block !important;
+  flex: 0 0 auto !important;
+  width: 64px !important;
+  height: 64px !important;
+  border: 1px solid var(--cp-border) !important;
+  border-radius: var(--cp-radius-lg) !important;
+  background: #ffffff url('../img/logo.svg') no-repeat center / 46px 46px !important;
+  box-shadow: var(--cp-shadow) !important;
 }
 
-/* Inject "CasePack" wordmark */
-#kc-header-wrapper::after {
-  content: 'CasePack';
-  display: block;
-  font-size: 1.5rem !important;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--cp-fg);
-  line-height: 1;
+.pf-v5-c-login__header::after {
+  content: 'Incident response, evidence, and compliance—organized in one secure workspace.';
+  display: block !important;
+  max-width: 27rem !important;
+  margin-top: 1.5rem !important;
+  color: var(--cp-muted-fg) !important;
+  font-size: 1rem !important;
+  line-height: 1.65 !important;
 }
 
 /* ─── Login Card ─────────────────────────────────────────────── */
 .pf-v5-c-login__main {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
   background: var(--cp-card) !important;
   color: var(--cp-card-fg) !important;
   border: 1px solid var(--cp-border) !important;
   border-radius: var(--cp-radius-lg) !important;
   box-shadow: var(--cp-shadow-lg) !important;
   width: 100% !important;
-  max-width: 420px !important;
+  max-width: 432px !important;
   overflow: hidden !important;
   /* Remove default PF grid area */
   grid-area: unset !important;
@@ -160,14 +164,69 @@ body#keycloak-bg {
   font-size: 1.25rem !important;
   font-weight: 600 !important;
   color: var(--cp-fg) !important;
-  text-align: center !important;
+  text-align: left !important;
   margin: 0 !important;
   padding: 0 !important;
 }
 
 /* ─── Form Body ──────────────────────────────────────────────── */
 .pf-v5-c-login__main-body {
-  padding: 1.5rem 2rem 2rem !important;
+  padding: 1.25rem 2rem 2rem !important;
+}
+
+@media (max-width: 800px) {
+  .pf-v5-c-login__container {
+    grid-template-columns: minmax(0, 27rem) !important;
+    justify-content: center !important;
+    gap: 1.5rem !important;
+  }
+
+  .pf-v5-c-login__header {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    text-align: center !important;
+  }
+
+  #kc-header-wrapper.pf-v5-c-brand {
+    justify-content: center !important;
+    font-size: 1.625rem !important;
+  }
+
+  #kc-header-wrapper::before {
+    width: 52px !important;
+    height: 52px !important;
+    background-size: 38px 38px !important;
+  }
+
+  .pf-v5-c-login__header::after {
+    margin: 0.875rem auto 0 !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .pf-v5-c-login__main {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pf-v5-c-login {
+    align-items: flex-start !important;
+    padding: 1.25rem 1rem !important;
+  }
+
+  .pf-v5-c-login__main-header {
+    padding: 1.5rem 1.25rem 0 !important;
+  }
+
+  .pf-v5-c-login__main-body {
+    padding: 1.25rem !important;
+  }
+
+  .pf-v5-c-login__main-footer {
+    padding-inline: 1.25rem !important;
+  }
 }
 
 /* ─── Labels ─────────────────────────────────────────────────── */
