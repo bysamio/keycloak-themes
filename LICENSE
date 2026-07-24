@@ -1,0 +1,63 @@
+bysam.io Keycloak Themes License
+
+Copyright © 2026 bysam.io. All rights reserved.
+
+This is a proprietary, source-available license. The Software is published
+publicly so that licensed customers can deploy it, but it is not open source
+and is not licensed for general reuse.
+
+1. DEFINITIONS
+   "Software" means the Keycloak themes and all source code, stylesheets,
+   templates, scripts, images, logos, fonts, configuration, and other assets
+   contained in this repository.
+   "Products" means the commercial software products offered by bysam.io.
+   "Customer" means a person or entity that holds a valid license or
+   subscription to one or more Products.
+   "You" means the individual or entity exercising rights under this License.
+
+2. GRANT OF LICENSE
+   Subject to the terms of this License, bysam.io grants each Customer a
+   non-exclusive, non-transferable, non-sublicensable, royalty-free license to
+   download, install, deploy, configure, and modify the Software solely for the
+   purpose of operating and integrating a self-hosted deployment of the Products
+   in connection with that Customer's valid Product license or subscription.
+
+3. RESTRICTIONS
+   Except as expressly permitted in Section 2, You may not:
+   (a) redistribute, publish, sublicense, sell, rent, lease, or otherwise make
+       the Software, in original or modified form, available to any third party;
+   (b) use the Software, in whole or in part, in or for any product, service, or
+       purpose other than operating the Products;
+   (c) remove, obscure, or alter any copyright, trademark, or other proprietary
+       notice contained in the Software.
+
+4. TRADEMARKS AND BRAND ASSETS
+   This License grants no right to use the names, logos, trade dress, product
+   names, or other brand assets of bysam.io or its Products, except as strictly
+   necessary to operate a deployment of the Products permitted under Section 2.
+   All trademarks and brand assets remain the property of their respective
+   owners.
+
+5. OWNERSHIP
+   The Software is licensed, not sold. bysam.io retains all right, title, and
+   interest in and to the Software, including all intellectual property rights.
+   All rights not expressly granted in this License are reserved.
+
+6. DISCLAIMER OF WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NONINFRINGEMENT.
+
+7. LIMITATION OF LIABILITY
+   IN NO EVENT SHALL bysam.io BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+   OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+8. TERMINATION
+   This License terminates automatically if You breach any of its terms, or when
+   Your Product license or subscription ends. Upon termination, You must cease
+   all use of the Software and destroy all copies in Your possession or control.
+
+For any use beyond the scope of this License, or to obtain separate licensing
+terms, contact admin@bysam.io.
