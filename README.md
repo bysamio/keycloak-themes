@@ -12,9 +12,15 @@ required.
 | Theme      | Login | Email | Description |
 |------------|:-----:|:-----:|-------------|
 | `casepack` |   ✓   |   ✓   | CasePack login built on Keycloak v2 (PatternFly 5), with light/dark mode synced to the CasePack app, plus branded transactional email templates. |
+| `bursardesk` | ✓ | ✓ | BursarDesk login, registration, and account actions in the app's navy and emerald palette, plus branded email copy. |
 | `cmportal` |   ✓   |   —   | CM Portal branded login (classic PatternFly) with the Montserrat font and custom logo. |
 
 > ✓ = customised/branded, — = not provided.
+
+The BursarDesk login theme targets Keycloak 26.7.4. Its `register.ftl` is a
+small upstream override that skips password validation JavaScript when the
+realm registers users before they set a password. Compare this file with the
+bundled template on each Keycloak upgrade.
 
 Each theme follows the standard
 [Keycloak theme layout](https://www.keycloak.org/docs/latest/server_development/#_themes)
@@ -125,8 +131,9 @@ are published to GHCR with the following tags:
 | Release tag `v0.5.0` | `0.5.0`, `0.5`                     | Production    |
 | Push to `main`    | `0.6.0-SNAPSHOT-<sha>`, `<sha>`, `latest` | Development |
 
-Release tags are immutable and recommended for production. `latest` always
-points at the most recent `main` build.
+Release tags are recommended for production. `latest` always
+points at the most recent `main` build. The publish job verifies each tag can
+be read back from GHCR after pushing it.
 
 ### Publishing a release
 
@@ -142,3 +149,14 @@ published so that licensed customers can deploy them alongside bysam.io's
 commercial products in self-hosted environments. They are **not** open source,
 and all other rights, including brand assets and trademarks, are reserved.
 For licensing enquiries, contact admin@bysam.io.
+
+## Image scan alerts
+
+If a scanner reports `image not found`, verify the exact tag first with
+`docker manifest inspect ghcr.io/bysamio/keycloak-themes:<tag>` and check the
+corresponding GitHub Actions release run. The `0.5.0` tag was verified as a
+multi-architecture GHCR image on 2026-09-27. An alert that names a different
+package (for example `casepack:0.7.0`) alongside this image needs its scanner
+association or scheduled scan target checked; the theme image itself has no
+CasePack package version. Do not delete or republish an existing release tag
+solely in response to that alert.

@@ -103,6 +103,25 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           platforms: linux/amd64,linux/arm64
 
+      - name: Verify published tags are readable
+        env:
+          PUBLISHED_TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          while IFS= read -r tag; do
+            [[ -n "$tag" ]] || continue
+            for attempt in 1 2 3 4 5; do
+              if docker buildx imagetools inspect "$tag" >/dev/null; then
+                echo "Verified $tag"
+                break
+              fi
+              if [[ "$attempt" == 5 ]]; then
+                echo "Could not read published image $tag" >&2
+                exit 1
+              fi
+              sleep 3
+            done
+          done <<< "$PUBLISHED_TAGS"
+
   # Validate the image on PRs (build only, no push)
   validate:
     name: Validate Build
@@ -121,4 +140,16 @@ jobs:
         with:
           context: .
           push: false
+          load: true
+          tags: keycloak-themes:pr-test
           platforms: linux/amd64
+
+      - name: Check BursarDesk assets in image
+        run: |
+          docker run --rm --entrypoint sh keycloak-themes:pr-test -c '
+            test -f /themes/bursardesk/login/theme.properties &&
+            test -f /themes/bursardesk/login/register.ftl &&
+            test -f /themes/bursardesk/login/resources/css/bursardesk.css &&
+            test -f /themes/bursardesk/login/resources/js/invitation-prefill.js &&
+            test -f /themes/bursardesk/email/html/template.ftl
+          '
